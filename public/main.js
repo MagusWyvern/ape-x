@@ -1,5 +1,5 @@
 // Function to fetch and append the latest log
-function fetchAndAppendLog() {
+function fetchAndAppendLatestLog() {
     fetch('/latest-log')
         .then(response => response.text())
         .then(log => {
@@ -10,10 +10,25 @@ function fetchAndAppendLog() {
         .catch(error => console.error('Error fetching log:', error));
 }
 
-// Fetch and append a log every minute
-setInterval(fetchAndAppendLog, 60000);
+// Function to load all existing logs
+function loadAllLogs() {
+    fetch('/all-logs')
+        .then(response => response.json())
+        .then(logs => {
+            const logsDiv = document.getElementById('logs');
+            logs.forEach(log => {
+                logsDiv.innerHTML += `<p>${log.date} [${log.time}] ${log.incident} at ${log.location}</p>`;
+            });
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        })
+        .catch(error => console.error('Error loading logs:', error));
+}
 
-// Fetch and append a log immediately when the page loads
+// Fetch the latest log every minute
+setInterval(fetchAndAppendLatestLog, 60000);
+
+// Load all existing logs and fetch the latest log when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    fetchAndAppendLog();
+    loadAllLogs();
+    fetchAndAppendLatestLog();
 });
