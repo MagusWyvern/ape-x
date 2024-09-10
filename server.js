@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+const readline = require('readline');
 
 const app = express();
 
@@ -20,7 +21,7 @@ const LOGS_FILE = path.join(__dirname, 'logs.json');
 // Function to generate a random incident log
 const generateIncidentLog = () => {
   const incidents = ['MONKEY ATTACK'];
-  const locations = ['DINING HALL', 'RESOURCE CENTER', 'VILLA A', 'VILLA B', 'VILLA C', 'VILLA D', 'VILLA E', 'QUAD', 'LECTURE HALL', 'GYM', 'GREAT HALL'];
+  const locations = ['LECTURE THEATRE 2'];
   
   const incident = incidents[Math.floor(Math.random() * incidents.length)];
   const location = locations[Math.floor(Math.random() * locations.length)];
@@ -71,8 +72,8 @@ function generateAndSaveLog() {
   });
 }
 
-// Generate a new log every minute
-setInterval(generateAndSaveLog, 60000);
+// Generate a new log every half minute
+// setInterval(generateAndSaveLog, 30000);
 
 // Endpoint to get the latest log
 app.get('/latest-log', (req, res) => {
@@ -120,6 +121,7 @@ const server = https.createServer(options, app);
 server.listen(3000, '0.0.0.0', () => {
   console.log(`Server is now online on port 3000!`);
   console.log(`Use 'ip a' to identify host IP.`);
+  console.log('Press "A" to generate a new log on demand.');
   // Generate first log on server start
   generateAndSaveLog();
 });
@@ -136,3 +138,21 @@ process.on('SIGTERM', () => {
     console.log('HTTP server closed');
   });
 });
+
+// Set up readline interface
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Listen for keypress events
+rl.input.on('keypress', (str, key) => {
+  if (key.name === 'a' || key.name === 'A') {
+    console.log('')
+    console.log('Generating new log on demand...');
+    generateAndSaveLog();
+  }
+});
+
+// Enable keypress events
+rl.input.setRawMode(true);
