@@ -16,7 +16,7 @@ const options = {
 };
 
 // Consider moving logs out of public directory for better security
-const LOGS_FILE = path.join(__dirname, 'logs.json');
+const LOGS_FILE = path.join(__dirname, 'server/logs.json');
 
 // Function to generate a random incident log
 const generateIncidentLog = () => {
